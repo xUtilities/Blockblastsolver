@@ -1,16 +1,19 @@
 // Configuration variables
 const GRID_COLOR = { r: 50, g: 77, b: 131 };
-const COLOR_THRESHOLD = 20;
+const COLOR_THRESHOLD = 30;
 const BOTTOM_CROP_PERCENTAGE = 30;
 const SIZE_RATIO = 2.3;
 const CELL_SIZE = 8;
 
-// Function to calculate color distance between two colors
+// Use squared distance for faster comparison
+const thresholdSquared = COLOR_THRESHOLD * COLOR_THRESHOLD;
+
+// Function to calculate squared color distance between two colors
 function colorDistance(c1, c2) {
   const dr = c1.r - c2.r;
   const dg = c1.g - c2.g;
   const db = c1.b - c2.b;
-  return Math.sqrt(dr * dr + dg * dg + db * db);
+  return dr * dr + dg * dg + db * db;  // Squared distance for faster comparison
 }
 
 // Function to group shapes in the grid
@@ -30,28 +33,19 @@ function groupShapes(grid) {
 
   // Helper function for flood fill to collect coordinates of a shape
   function floodFill(x, y) {
-    const stack = [[x, y]];
+    const queue = [[x, y]];
     visited[x][y] = true;
-    const shapeCoordinates = [[x, y]]; // Start the shape with the current coordinate
+    const shapeCoordinates = [[x, y]];
 
-    while (stack.length > 0) {
-      const [cx, cy] = stack.pop();
-
+    while (queue.length > 0) {
+      const [cx, cy] = queue.shift();  // BFS with queue (shift instead of pop)
       for (const [dx, dy] of directions) {
         const nx = cx + dx;
         const ny = cy + dy;
-
-        if (
-          nx >= 0 &&
-          nx < rows &&
-          ny >= 0 &&
-          ny < cols &&
-          grid[nx][ny] === 1 &&
-          !visited[nx][ny]
-        ) {
+        if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && grid[nx][ny] === 1 && !visited[nx][ny]) {
           visited[nx][ny] = true;
-          shapeCoordinates.push([nx, ny]); // Add the new coordinate to the shape
-          stack.push([nx, ny]);
+          shapeCoordinates.push([nx, ny]);
+          queue.push([nx, ny]);
         }
       }
     }
@@ -65,11 +59,8 @@ function groupShapes(grid) {
       if (grid[i][j] === 1 && !visited[i][j]) {
         const shapeCoordinates = floodFill(i, j); // Get coordinates of the current shape
 
-        // Determine the bounding box of the shape
-        const minX = Math.min(...shapeCoordinates.map((coord) => coord[0]));
-        const maxX = Math.max(...shapeCoordinates.map((coord) => coord[0]));
-        const minY = Math.min(...shapeCoordinates.map((coord) => coord[1]));
-        const maxY = Math.max(...shapeCoordinates.map((coord) => coord[1]));
+        // Get the bounding box of the shape
+        const { minX, maxX, minY, maxY } = getBoundingBox(shapeCoordinates);
 
         // Create the subgrid (bounding box) filled with `1`s
         const subgrid = Array.from({ length: maxX - minX + 1 }, () =>
@@ -90,10 +81,23 @@ function groupShapes(grid) {
   return shapes;
 }
 
+// Function to calculate bounding box of shape coordinates
+function getBoundingBox(shapeCoordinates) {
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+
+  for (const [x, y] of shapeCoordinates) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+
+  return { minX, maxX, minY, maxY };
+}
+
 // Function to process the image and extract the grid using canvas
 async function processImage(image, gridY, gridHeight) {
   const canvas = document.createElement('canvas');
-  canvas.style.display = "block";
   const ctx = canvas.getContext('2d');
   canvas.width = image.width;
   canvas.height = image.height;
@@ -131,13 +135,12 @@ async function processImage(image, gridY, gridHeight) {
         croppedPixels[index + 2],
       ];
 
-      const distance = colorDistance({ r, g, b }, GRID_COLOR);
-      const isBackground = distance < COLOR_THRESHOLD;
-      grid[row][col] = isBackground ? 0 : 1;
+      const distanceSquared = colorDistance({ r, g, b }, GRID_COLOR);
+      grid[row][col] = distanceSquared < thresholdSquared ? 0 : 1;  // Use squared distance for speed
     }
   }
 
-  canvas.remove()
+  canvas.remove();
 
   // Group the shapes from the grid
   const shapes = groupShapes(grid);
