@@ -136,5 +136,5 @@ document.getElementById('image-upload').addEventListener('change', function(even
 });
 
 function doManual() {
-  window.location.href = "/manual.html"
+  window.location.pathname = "/manual.html";
 }
