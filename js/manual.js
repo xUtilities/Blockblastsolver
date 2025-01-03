@@ -129,5 +129,5 @@ function submit() {
 
 // Handle the goBack button click
 function goBack() {
-  window.location.href = "/"; // Navigate to the homepage or previous page
+  window.location.pathname = "/"; // Navigate to the homepage or previous page
 }
