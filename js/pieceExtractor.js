@@ -1,8 +1,8 @@
 // Configuration variables
-const GRID_COLOR = { r: 50, g: 77, b: 131 }; // Example grid color (background color)
-const COLOR_THRESHOLD = 10;
+const GRID_COLOR = { r: 50, g: 77, b: 131 };
+const COLOR_THRESHOLD = 20;
 const BOTTOM_CROP_PERCENTAGE = 30;
-const SIZE_RATIO = 2.1905;
+const SIZE_RATIO = 2.3;
 const CELL_SIZE = 8;
 
 // Function to calculate color distance between two colors
