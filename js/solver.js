@@ -150,52 +150,53 @@ function playGameWithDynamicLookahead(grid, pieces) {
 
 // Display the board in a human-readable format
 function displayBoard(grid, piece, row, col) {
-  const gridSize = grid.length
+  const gridSize = grid.length;
 
   for (let r = 0; r < gridSize; r++) {
-    let rowStr = ""
-    const span = document.createElement("span")
+    let rowStr = "";
+    const span = document.createElement("span");
     for (let c = 0; c < gridSize; c++) {
-      let isPartOfPiece = false
+      let isPartOfPiece = false;
 
       if (piece) {
         isPartOfPiece = piece.some((rowPiece, pr) =>
           rowPiece.some(
             (cell, pc) => cell === 1 && r === row + pr && c === col + pc,
           ),
-        )
+        );
       }
 
       if (isPartOfPiece) {
-        rowStr += "🟪 "
+        rowStr += "🟪 "; // Purple emoji
       } else if (grid[r][c] === 1) {
-        rowStr += "🟥 "
+        rowStr += "🟥 "; // Red emoji
       } else {
-        rowStr += "🟩 "
+        rowStr += "🟩 "; // Green emoji
       }
     }
-    span.innerText = rowStr
-    movesDiv.appendChild(span)
+    span.innerText = rowStr;
+    movesDiv.appendChild(span);
+    movesDiv.appendChild(document.createElement("br")); // Add line break for each row
   }
 }
 
 function makeMessage(msg) {
-  const textElement = document.createElement("h2")
-  textElement.innerText = msg
+  const textElement = document.createElement("h2");
+  textElement.innerText = msg;
 
-  movesDiv.appendChild(textElement)
+  movesDiv.appendChild(textElement);
 }
 
 // Display the board after each piece is placed
 function displayWithOrder(grid, pieces, order) {
   order.forEach(({ pieceIndex, x, y }) => {
-    const piece = pieces[pieceIndex]
-    makeMessage(`Placing piece ${pieceIndex + 1} at (${y + 1}, ${8 - x}):`)
-    grid = placeBlock(grid, piece, x, y)
-    const { grid: clearedGrid } = clearCompletedLines(grid)
-    displayBoard(clearedGrid, piece, x, y)
-    grid = clearedGrid
-  })
+    const piece = pieces[pieceIndex];
+    makeMessage(`Placing piece ${pieceIndex + 1} at (${y + 1}, ${8 - x}):`);
+    grid = placeBlock(grid, piece, x, y);
+    const { grid: clearedGrid } = clearCompletedLines(grid);
+    displayBoard(clearedGrid, piece, x, y);
+    grid = clearedGrid;
+  });
 }
 
 export default {
