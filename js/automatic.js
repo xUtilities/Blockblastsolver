@@ -12,9 +12,6 @@ const {
 const canvas = document.getElementById('canvas');
 const moves = document.getElementById('moves');
 const resultDiv = document.getElementById('result');
-const doManualButton = document.getElementById("manualBtn")
-
-doManualButton.addEventListener("click", doManual)
 
 const mainGrid = document.getElementById("main-grid")
 const smallGrids = [
@@ -134,7 +131,3 @@ document.getElementById('image-upload').addEventListener('change', function(even
     reader.readAsDataURL(file);
   }
 });
-
-function doManual() {
-  window.location.pathname = "/Blockblastsolver/manual.html";
-}
