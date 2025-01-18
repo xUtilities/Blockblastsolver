@@ -176,7 +176,6 @@ function displayBoard(grid, piece, row, col) {
     }
     span.innerText = rowStr;
     movesDiv.appendChild(span);
-    movesDiv.appendChild(document.createElement("br")); // Add line break for each row
   }
 }
 
