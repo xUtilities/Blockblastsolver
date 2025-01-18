@@ -10,7 +10,6 @@ const {
 
 // DOM Elements
 const submitButton = document.getElementById("submitButton");
-const goBackBtn = document.getElementById("goBack");
 
 const mainGrid = document.getElementById("main-grid");
 const smallGrids = [
@@ -25,7 +24,6 @@ smallGrids.forEach((grid) => createGrid(grid, 5)); // Create small grids with si
 
 // Event Listeners
 submitButton.addEventListener("click", submit);
-goBackBtn.addEventListener("click", goBack);
 
 // Function to create grid cells
 function createGrid(gridElement, size) {
@@ -125,9 +123,4 @@ function submit() {
   // Final message and display final board
   makeMessage("Final Board:");
   displayBoard(result.finalGrid);
-}
-
-// Handle the goBack button click
-function goBack() {
-  window.location.pathname = "/"; // Navigate to the homepage or previous page
 }
